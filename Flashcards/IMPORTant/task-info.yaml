@@ -473,6 +473,416 @@ files:
         // just empty class, but not abstract so it can be run
     }
   learner_created: false
+- name: src/flashcards/Main.java
+  visible: true
+  text: |
+    package flashcards;
+    import java.io.*;
+    import java.util.*;
+
+    public class Main {
+    //    static Map<String, String> map = new LinkedHashMap<>();
+    //    static Map<String, String> map2 = new LinkedHashMap<>();
+    //    public static void main(String[] args) {
+    //        try(BufferedReader br = new BufferedReader(new InputStreamReader(System.in))){
+    //            while(true) {
+    //                System.out.println("Input the action (add, remove, import, export, ask, exit):");
+    //                String choice = br.readLine();
+    //                switch (choice) {
+    //                case "add":
+    //                    addCard(br);
+    //                    System.out.println();
+    //                    break;
+    //                case "remove":
+    //                    removeCard(br);
+    //                    System.out.println();
+    //                    break;
+    //                case "import":
+    //                    loadCard(br);
+    //                    System.out.println();
+    //                    break;
+    //                case "export":
+    //                    saveCard(br);
+    //                    System.out.println();
+    //                    break;
+    //                case "ask":
+    //                    askDefinition(br);
+    //                    System.out.println();
+    //                    break;
+    //                case "exit":
+    //                    System.out.println("Bye Bye!");
+    //                    System.exit(0);
+    //                default:
+    //                    break;
+    //            }
+    //            }
+    //        } catch(IOException e){
+    //            e.printStackTrace();
+    //        }
+    //
+    //    }
+    //    public static void addCard(BufferedReader br)throws IOException {
+    //            System.out.println("The card:");
+    //            String cardName =  br.readLine().trim();
+    //            if(map.containsKey(cardName)) {
+    //                System.out.println("The card \"" + cardName + "\" already exists. ");
+    //                return;
+    //            }
+    //            System.out.println("The definition of the card");
+    //            String cardDefinition = br.readLine().trim();
+    //            if(map2.containsKey(cardDefinition)) {
+    //                System.out.println("The definition \"" + cardDefinition + "\" already exists.");
+    //                return;
+    //            }
+    //            map.put(cardName,cardDefinition);
+    //            map2.put(cardDefinition,cardName);
+    //            System.out.println("The pair (\""+cardName+"\":\""+map.get(cardName)+"\") has been added.");
+    //    }
+    //    public static void removeCard(BufferedReader br)throws IOException {
+    //        System.out.println("The card");
+    //        String card = br.readLine();
+    //        if(map.containsKey(card)){
+    //            map2.remove(map.get(card));
+    //            map.remove(card);
+    //            System.out.println("The card has been removed.");
+    //        } else {
+    //            System.out.println("Can't remove \"" + card + "\": there is no such card.");
+    //        }
+    //    }
+    //    public static void loadCard(BufferedReader br)throws IOException {
+    //        System.out.println("File name:");
+    //        String fileName = br.readLine();
+    //        File file = new File(fileName);
+    //        if(!file.isFile()) {
+    //            System.out.println("File not found.");
+    //            return;
+    //        }
+    //        Scanner sc = new Scanner(file);
+    //        int count = 0;
+    //        while (sc.hasNextLine()) {
+    //            String[] tokens = sc.nextLine().split(",");
+    //            String key = tokens[0].trim();
+    //            String value = tokens[1].trim();
+    //            if(map.containsKey(key)) {
+    //                String oldDefinition = map.get(key);
+    //                map2.remove(oldDefinition);
+    //            }
+    //            map.put(key,value);
+    //            map2.put(value,key);
+    //            count++;
+    //        }
+    //        System.out.println(count + " cards have been loaded.");
+    //
+    //    }
+    //    public static void saveCard(BufferedReader br)throws IOException {
+    //        System.out.println("File name:");
+    //        String fileName = br.readLine();
+    //        File file = new File(fileName);
+    //        FileWriter writer = new FileWriter(file);
+    //        int count = map.size();
+    //        StringBuilder sb = new StringBuilder();
+    //        for (Map.Entry<String, String> entry : map.entrySet()) {
+    //            String key = entry.getKey();
+    //            String value = entry.getValue();
+    //            sb.append(key).append(",").append(value).append("\n");
+    //        }
+    //        writer.write(sb.toString().trim());
+    //        writer.close();
+    //        System.out.println(count + " cards have been saved.");
+    //    }
+    //    public static void askDefinition(BufferedReader br) throws IOException {
+    //        System.out.println("How many times to ask?");
+    //        int times = Integer.parseInt(br.readLine());
+    //        Random random = new Random();
+    //        ArrayList<String> keys = new ArrayList<>(map.keySet());
+    //        int limit = keys.size();
+    //        for(int i = 0; i < times; i++) {
+    //            String card = keys.get(random.nextInt(limit));
+    //            System.out.println("Print the definition of \"" + card +"\":");
+    //            String query = br.readLine();
+    //            String correctAnswer = map.get(card);
+    //            if(query.equals(correctAnswer)) {
+    //                System.out.println("Correct answer.");
+    //            } else {
+    //                if(map2.containsKey(query)) {
+    //                    System.out.println("Wrong answer. The correct one is \"" + correctAnswer + "\", you've just written the definition of \"" + map2.get(query) + "\".");
+    //                } else {
+    //                    System.out.println("Wrong answer. The correct one is \"" + correctAnswer + "\".");
+    //                }
+    //            }
+    //        }
+    //    }
+    public static void main(String[] args) throws IOException {
+        Application app = new Application();
+        app.start();
+    }
+    }
+  learner_created: true
+- name: src/flashcards/Application.java
+  visible: true
+  text: |
+    package flashcards;
+
+    import java.io.*;
+    import java.util.*;
+    import java.util.function.Consumer;
+    import java.util.function.Predicate;
+    import java.util.stream.Collectors;
+
+    public class Application {
+        private static final String ADD_CARD = "add";
+        private static final String REMOVE_CARD = "remove";
+        private static final String IMPORT_CARD = "import";
+        private static final String EXPORT_CARD = "export";
+        private static final String ASK = "ask";
+        private static final String EXIT = "exit";
+        private static final String HARDEST_CARD = "hardest card";
+        private static final String LOG = "log";
+        private static final String RESET_STATS = "reset stats";
+
+        FastIO fio = new FastIO();
+        Set<Card> cards = new LinkedHashSet<>();
+
+        public void start()throws IOException {
+            while(true) {
+                fio.print("Input the action (add, remove, import, export, ask, exit, log, hardest card, reset stats):");
+                String choice = fio.nextLine();
+                switch (choice) {
+                    case ADD_CARD:
+                        addCard();
+                        break;
+                    case REMOVE_CARD:
+                        removeCard();
+                        break;
+                    case IMPORT_CARD:
+                        loadCard();
+                        break;
+                    case EXPORT_CARD:
+                        saveCard();
+                        break;
+                    case ASK:
+                        askDefinition();
+                        break;
+                    case HARDEST_CARD:
+                        hardestCard();
+                        break;
+                    case LOG:
+                        setLog();
+                        break;
+                    case RESET_STATS :
+                        reset();
+                        break;
+                    case EXIT:
+                        fio.print("Bye Bye!");
+                        System.exit(0);
+                    default:
+                        break;
+                }
+                fio.print();
+            }
+        }
+        public void addCard()throws IOException {
+            fio.print("The card:");
+            String cardName =  fio.nextLine().trim();
+            if(cards.stream().anyMatch(card -> card.term.equals(cardName))) {
+                fio.print("The card \"" + cardName + "\" already exists. ");
+                return;
+            }
+            fio.print("The definition of the card");
+            String cardDefinition = fio.nextLine().trim();
+            if(cards.stream().anyMatch(card -> card.definition.equals(cardDefinition))) {
+                fio.print("The definition \"" + cardDefinition + "\" already exists.");
+                return;
+            }
+            cards.add(new Card(cardName,cardDefinition));
+            fio.print("The pair (\""+cardName+"\":\""+cardDefinition+"\") has been added.");
+        }
+        public void removeCard()throws IOException {
+            fio.print("The card");
+            String cardName = fio.nextLine();
+            cards.stream()
+                    .filter(card -> card.term.equals(cardName))
+                    .findFirst()
+                    .ifPresentOrElse(this::remove, () -> fio.print("Can't remove \"" + cardName + "\": there is no such card."));
+        }
+        private void remove(Card card) {
+            cards.remove(card);
+            fio.print("The card has been removed.");
+        }
+        public void loadCard() throws IOException {
+            fio.print("File name:");
+            String fileName = fio.nextLine();
+            try {
+                File file = new File(fileName);
+                Scanner sc = new Scanner(file);
+                int count = 0;
+                while (sc.hasNextLine()) {
+                    String[] tokens = sc.nextLine().split(",");
+                    String term = tokens[0].trim();
+                    String definition = tokens[1].trim();
+                    int mistakes = Integer.parseInt(tokens[2].trim());
+                    if(cards.stream().anyMatch(card -> card.term.equals(term))) {
+                        Card oldCard = cards.stream().filter(card -> card.term.equals(term)).findFirst().orElse(null);
+                        if (oldCard == null) throw new NullPointerException();
+                        oldCard.setTerm(term);
+                        oldCard.setDefinition(definition);
+                        oldCard.setMistakes(mistakes);
+                    } else {
+                        cards.add(new Card(term, definition, mistakes));
+                    }
+                    count++;
+                }
+                fio.print(count + " cards have been loaded.");
+                sc.close();
+            } catch(Exception e) {
+                fio.print("File not found.");
+            }
+
+        }
+        public void saveCard()throws IOException {
+            fio.print("File name:");
+            String fileName = fio.nextLine();
+            File file = new File(fileName);
+            FileWriter writer = new FileWriter(file);
+            int count = cards.size();
+            StringBuilder sb = new StringBuilder();
+            cards.forEach(card -> sb.append(card.term).append(",").append(card.definition).append(",").append(card.mistakes).append("\n"));
+            writer.write(sb.toString().trim());
+            writer.close();
+            fio.print(count + " cards have been saved.");
+        }
+        public void askDefinition() throws IOException {
+            fio.print("How many times to ask?");
+            int times = Integer.parseInt(fio.nextLine());
+            Random random = new Random();
+            ArrayList<Card> keys = new ArrayList<>(cards);
+            int limit = keys.size();
+            for(int i = 0; i < times; i++) {
+                Card randomCard = keys.get(random.nextInt(limit));
+                fio.print("Print the definition of \"" + randomCard.term +"\":");
+                String query = fio.nextLine();
+                String correctAnswer = randomCard.definition;
+                if(query.equals(correctAnswer)) {
+                    fio.print("Correct answer.");
+                } else {
+                    randomCard.makeMistake();
+                    Card correctCard = cards.stream().filter(c -> c.definition.equals(query)).findFirst().orElse(null);
+                    if(correctCard != null) {
+                        fio.print("Wrong answer. The correct one is \"" + correctAnswer + "\", you've just written the definition of \"" + correctCard.term + "\".");
+                    } else {
+                        fio.print("Wrong answer. The correct one is \"" + correctAnswer + "\".");
+                    }
+                }
+            }
+        }
+        public void hardestCard() {
+            cards.stream()
+                    .mapToInt(Card::getMistakes)
+                    .filter(mistakes -> mistakes > 0)
+                    .max()
+                    .ifPresentOrElse(this::printHardest, () -> fio.print("There are no cards with errors."));
+        }
+        private void printHardest(int maxMistakes) {
+            String is = cards.stream()
+                    .filter(card -> card.getMistakes() == maxMistakes)
+                    .count() == 1 ? " is " : "s are ";
+            String act = cards.stream()
+                    .filter(card -> card.getMistakes() == maxMistakes)
+                    .map(card -> String.format("\"%s\"", card.term))
+                    .collect(Collectors.joining(", "));
+            String error = "error" + (maxMistakes > 1 ? "s" : "");
+            fio.print("The hardest card" + is + act + ". You have "+ maxMistakes +" " + error + " answering it.");
+        }
+        public void setLog()throws IOException {
+            fio.print("File name:");
+            String file = fio.nextLine().trim();
+            fio.log(file);
+            fio.print("The log has been saved.");
+        }
+        public void reset() {
+            cards.forEach(Card::eraseMistake);
+            fio.print("Card statistics has been reset.");
+        }
+    }
+  learner_created: true
+- name: src/flashcards/FastIO.java
+  visible: true
+  text: |
+    package flashcards;
+
+    import java.io.*;
+    import java.util.*;
+
+    public class FastIO {
+        private BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        private List<String> logs = new ArrayList<>();
+        public String nextLine() throws IOException {
+            String line = br.readLine();
+            logs.add(line);
+            return line;
+        }
+        public void print(String s) {
+            logs.add(s);
+            System.out.println(s);
+        }
+        public void print() {
+            System.out.println();
+        }
+        public void log(String fileName)throws IOException {
+            File file = new File(fileName);
+            FileWriter writer = new FileWriter(file);
+            for(String l : logs) {
+                writer.write(l + "\n");
+            }
+            writer.close();
+        }
+    }
+  learner_created: true
+- name: src/flashcards/Card.java
+  visible: true
+  text: |
+    package flashcards;
+
+    public class Card {
+        public String definition;
+        public String term;
+        public int mistakes;
+
+        public Card(String term, String definition, int mistakes) {
+            this.definition = definition;
+            this.term = term;
+            this.mistakes = mistakes;
+        }
+
+        public int getMistakes() {
+            return mistakes;
+        }
+
+        public void setDefinition(String definition) {
+            this.definition = definition;
+        }
+
+        public void setMistakes(int mistakes) {
+            this.mistakes = mistakes;
+        }
+
+        public void setTerm(String term) {
+            this.term = term;
+        }
+
+        public Card(String term, String definition) {
+            this.term = term;
+            this.definition = definition;
+            this.mistakes = 0;
+        }
+        public void makeMistake() {
+            this.mistakes++;
+        }
+        public void eraseMistake() {
+            this.mistakes = 0;
+        }
+    }
+  learner_created: true
 feedback_link: https://hyperskill.org/projects/44/stages/238/implement
-status: Unchecked
+status: Solved
 record: -1

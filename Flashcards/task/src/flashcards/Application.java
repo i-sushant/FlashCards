@@ -2,8 +2,6 @@ package flashcards;
 
 import java.io.*;
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class Application {
@@ -16,10 +14,40 @@ public class Application {
     private static final String HARDEST_CARD = "hardest card";
     private static final String LOG = "log";
     private static final String RESET_STATS = "reset stats";
-
+    private static final String IMPORT = "-import";
+    private static final String EXPORT = "-export";
+    private static String IMPORT_FILE = null;
+    private static String EXPORT_FILE = null;
     FastIO fio = new FastIO();
     Set<Card> cards = new LinkedHashSet<>();
-
+    Application(String[] args) {
+        getArgs(args);
+    }
+    public void run() throws IOException {
+        importCards();
+        start();
+        exportCards();
+    }
+    public void getArgs(String... args) {
+        for(int i = 0; i<args.length;i+=2) {
+            if(IMPORT.equals(args[i])) {
+                IMPORT_FILE = args[i + 1];
+            }
+            if(EXPORT.equals(args[i])) {
+                EXPORT_FILE = args[i + 1];
+            }
+        }
+    }
+    private void importCards() throws IOException {
+        if(IMPORT_FILE != null) {
+            loadCard(IMPORT_FILE);
+        }
+    }
+    private void exportCards() throws IOException {
+        if(EXPORT_FILE != null) {
+            saveCard(EXPORT_FILE);
+        }
+    }
     public void start()throws IOException {
         while(true) {
             fio.print("Input the action (add, remove, import, export, ask, exit, log, hardest card, reset stats):");
@@ -51,7 +79,7 @@ public class Application {
                     break;
                 case EXIT:
                     fio.print("Bye Bye!");
-                    System.exit(0);
+                    return;
                 default:
                     break;
             }
@@ -89,6 +117,9 @@ public class Application {
     public void loadCard() throws IOException {
         fio.print("File name:");
         String fileName = fio.nextLine();
+        loadCard(fileName);
+    }
+    private void loadCard(String fileName) throws IOException {
         try {
             File file = new File(fileName);
             Scanner sc = new Scanner(file);
@@ -116,9 +147,12 @@ public class Application {
         }
 
     }
-    public void saveCard()throws IOException {
+    public void saveCard() throws IOException {
         fio.print("File name:");
         String fileName = fio.nextLine();
+        saveCard(fileName);
+    }
+    private void saveCard(String fileName)throws IOException {
         File file = new File(fileName);
         FileWriter writer = new FileWriter(file);
         int count = cards.size();
